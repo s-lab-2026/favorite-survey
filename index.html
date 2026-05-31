@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>お気に入り機能に関する調査</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <main class="app">
+    <div class="progress-area">
+      <div class="progress-text">
+        <span id="stepText">Step 0 / 5</span>
+      </div>
+      <div class="progress-bar">
+        <div id="progressFill"></div>
+      </div>
+    </div>
+
+    <!-- 画面0：説明 -->
+    <section id="screen-intro" class="screen active">
+      <div class="card">
+        <p class="label">マーケティング調査</p>
+        <h1>ECサイトの「お気に入り機能」に関する調査</h1>
+
+        <p class="lead">
+          この調査では、ECサイトの商品ページを見たときに、
+          「お気に入り登録」機能が購入判断にどのような影響を与えるのかを調べます。
+        </p>
+
+        <div class="notice">
+          <p>回答は研究・発表準備の目的で使用します。</p>
+          <p>個人が特定される情報は収集しません。</p>
+          <p>所要時間は約2〜3分です。</p>
+        </div>
+
+        <button class="primary-button" onclick="startSurvey()">調査を開始する</button>
+      </div>
+    </section>
+
+    <!-- 画面1：利用経験 -->
+    <section id="screen-usage" class="screen">
+      <div class="card">
+        <p class="label">Step 1</p>
+        <h2>お気に入り機能の利用について</h2>
+
+        <div class="question">
+          <p class="question-title">
+            Q1. あなたはECサイトで「お気に入り」「いいね」「あとで見る」などの機能を使ったことがありますか？
+          </p>
+
+          <label><input type="radio" name="usageFrequency" value="よく使う"> よく使う</label>
+          <label><input type="radio" name="usageFrequency" value="たまに使う"> たまに使う</label>
+          <label><input type="radio" name="usageFrequency" value="あまり使わない"> あまり使わない</label>
+          <label><input type="radio" name="usageFrequency" value="使ったことがない"> 使ったことがない</label>
+        </div>
+
+        <button class="primary-button" onclick="saveUsage()">次へ</button>
+      </div>
+    </section>
+
+    <!-- 画面2：使用目的 -->
+    <section id="screen-purpose" class="screen">
+      <div class="card">
+        <p class="label">Step 2</p>
+        <h2>お気に入り機能を使う目的について</h2>
+
+        <div class="question">
+          <p class="question-title">
+            Q2. お気に入り機能を使う目的として、当てはまるものをすべて選んでください。
+          </p>
+
+          <label><input type="checkbox" name="purpose" value="あとで購入するため"> あとで購入するため</label>
+          <label><input type="checkbox" name="purpose" value="他の商品と比較するため"> 他の商品と比較するため</label>
+          <label><input type="checkbox" name="purpose" value="値下げを待つため"> 値下げを待つため</label>
+          <label><input type="checkbox" name="purpose" value="商品を忘れないようにするため"> 商品を忘れないようにするため</label>
+          <label><input type="checkbox" name="purpose" value="買う予定はないが気になったため"> 買う予定はないが気になったため</label>
+        </div>
+
+        <div class="button-row">
+          <button class="secondary-button" onclick="goBack('screen-usage')">戻る</button>
+          <button class="primary-button" onclick="savePurpose()">次へ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 商品画面 -->
+    <section id="screen-product" class="screen">
+      <div class="shop-header">
+        <div>
+          <p class="shop-logo">Sample Store</p>
+          <p class="shop-sub">架空ECサイト</p>
+        </div>
+        <div class="shop-icons">
+          <span>🔍</span>
+          <span>🛒</span>
+        </div>
+      </div>
+
+      <div class="product-layout">
+        <div class="product-image">
+          <img src="tshirt.png" alt="シンプル白Tシャツの商品画像" class="product-photo">
+        </div>
+
+        <div class="product-info">
+          <p class="category">Fashion / T-shirt</p>
+          <h2>シンプル白Tシャツ</h2>
+
+          <div class="rating">★★★★★ <span>4.5 / 5.0</span></div>
+
+          <p class="price">¥2,980</p>
+
+          <p class="description">
+            春夏に使いやすい、シンプルな白Tシャツです。
+            普段使いしやすく、ジャケットやシャツのインナーとしても使用できます。
+          </p>
+
+          <div class="info-box">
+            <p>送料無料</p>
+            <p>最短2日でお届け</p>
+            <p>返品可能</p>
+          </div>
+
+          <div id="favoriteArea">
+            <button id="favoriteButton" class="favorite-button" onclick="addFavorite()">
+              ♡ お気に入りに登録
+            </button>
+            <p id="favoriteMessage" class="favorite-message">まだお気に入りに登録していません</p>
+          </div>
+
+          <button class="buy-button" onclick="chooseAction('購入')">今すぐ購入する</button>
+          <button class="later-button" onclick="chooseAction('先延ばし')">今は買わずにあとで見る</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 画面3：心理変化 -->
+    <section id="screen-psychology" class="screen">
+      <div class="card wide-card">
+        <p class="label">Step 3</p>
+        <h2>商品ページを見た後の感じ方について</h2>
+
+        <p class="lead small">
+          以下の項目について、あなたの考えにもっとも近いものを選んでください。
+        </p>
+
+        <div id="psychologyQuestions" class="matrix-area"></div>
+
+        <div class="button-row">
+          <button class="secondary-button" onclick="goBack('screen-product')">戻る</button>
+          <button class="primary-button" onclick="savePsychology()">次へ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 画面4：実体験 -->
+    <section id="screen-experience" class="screen">
+      <div class="card">
+        <p class="label">Step 4</p>
+        <h2>実際の経験について</h2>
+
+        <div class="question">
+          <p class="question-title">
+            Q4. ECサイトで「あとで買おう」と思ってお気に入りに入れた商品を、結局買わなかった経験はありますか？
+          </p>
+
+          <label><input type="radio" name="notPurchasedExperience" value="よくある"> よくある</label>
+          <label><input type="radio" name="notPurchasedExperience" value="たまにある"> たまにある</label>
+          <label><input type="radio" name="notPurchasedExperience" value="あまりない"> あまりない</label>
+          <label><input type="radio" name="notPurchasedExperience" value="まったくない"> まったくない</label>
+        </div>
+
+        <div class="button-row">
+          <button class="secondary-button" onclick="goBack('screen-psychology')">戻る</button>
+          <button class="primary-button" onclick="saveExperience()">次へ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 画面5：代替機能 -->
+    <section id="screen-features" class="screen">
+      <div class="card">
+        <p class="label">Step 5</p>
+        <h2>購入を促す機能について</h2>
+
+        <div class="question">
+          <p class="question-title">
+            Q5. 次のうち、「今すぐ買おう」と思いやすい機能をすべて選んでください。
+          </p>
+
+          <label><input type="checkbox" name="purchaseFeature" value="期間限定クーポン表示"> 期間限定クーポン表示</label>
+          <label><input type="checkbox" name="purchaseFeature" value="在庫残りわずか表示"> 在庫残りわずか表示</label>
+          <label><input type="checkbox" name="purchaseFeature" value="値下げ終了までのカウント表示"> 値下げ終了までのカウント表示</label>
+          <label><input type="checkbox" name="purchaseFeature" value="他ユーザーの購入人数表示"> 他ユーザーの購入人数表示</label>
+          <label><input type="checkbox" name="purchaseFeature" value="お気に入り登録人数表示"> お気に入り登録人数表示</label>
+        </div>
+
+        <div class="button-row">
+          <button class="secondary-button" onclick="goBack('screen-experience')">戻る</button>
+          <button class="primary-button" onclick="finishSurvey()">完了する</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 完了画面 -->
+    <section id="screen-finish" class="screen">
+      <div class="card">
+        <p class="label">完了</p>
+        <h2>ご回答ありがとうございました</h2>
+
+        <p class="lead">
+          以上で調査は終了です。ご協力ありがとうございました。
+        </p>
+
+        <div class="result-box">
+          <p id="finishMessage">回答が完了しました。</p>
+        </div>
+
+        <button class="secondary-button" onclick="restartSurvey()">もう一度テストする</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
