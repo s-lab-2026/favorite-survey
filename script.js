@@ -1,4 +1,5 @@
-const SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbywrxkRD8_bVOFzQNvHuviDDWtwnI0_JJrE6mAsLFdd1fPNrm66fpt_YGgh-JfovBxqSg/exec";
+const SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxtEPT23aSPrBMeeKnWtorJy5cIN430elW5XvwM6cehQfDpuyriFc6g_YZ3t8Ki6w5nJw/exec";
+
 const screens = [
   "screen-intro",
   "screen-usage",
@@ -31,12 +32,27 @@ const psychologyItems = [
   }
 ];
 
-const scaleLabels = [
-  "まったく思わない",
-  "あまり思わない",
-  "どちらともいえない",
-  "やや思う",
-  "とても思う"
+const scaleOptions = [
+  {
+    value: 5,
+    label: "とても思う"
+  },
+  {
+    value: 4,
+    label: "やや思う"
+  },
+  {
+    value: 3,
+    label: "どちらともいえない"
+  },
+  {
+    value: 2,
+    label: "あまり思わない"
+  },
+  {
+    value: 1,
+    label: "まったく思わない"
+  }
 ];
 
 let responseData = createInitialResponseData();
@@ -162,13 +178,12 @@ function createPsychologyQuestions() {
     const scaleRow = document.createElement("div");
     scaleRow.className = "scale-row";
 
-    scaleLabels.forEach((label, index) => {
+    scaleOptions.forEach((option) => {
       const labelElement = document.createElement("label");
-      const value = index + 1;
 
       labelElement.innerHTML = `
-        <input type="radio" name="${item.key}" value="${value}">
-        ${value}<br>${label}
+        <input type="radio" name="${item.key}" value="${option.value}">
+        ${option.value}：${option.label}
       `;
 
       scaleRow.appendChild(labelElement);
@@ -209,7 +224,7 @@ function saveExperience() {
   showScreen("screen-features");
 }
 
-function finishSurvey() {
+async function finishSurvey() {
   const features = getCheckboxValues("purchaseFeature");
 
   if (features.length === 0) {
@@ -220,12 +235,49 @@ function finishSurvey() {
   responseData.purchaseFeatures = features;
   responseData.finishedAt = new Date().toISOString();
 
+  const submitButton = document.querySelector("#screen-features .primary-button");
+  submitButton.disabled = true;
+  submitButton.textContent = "送信中...";
+
   saveToLocalStorage(responseData);
 
-  document.getElementById("finishMessage").textContent =
-    "回答が完了しました。回答ID：" + responseData.participantId;
+  const sendResult = await sendToGoogleSheet(responseData);
+
+  if (sendResult) {
+    document.getElementById("finishMessage").textContent =
+      "回答が送信されました。回答ID：" + responseData.participantId;
+  } else {
+    document.getElementById("finishMessage").textContent =
+      "回答は完了しました。ただし、スプレッドシート送信に失敗した可能性があります。回答ID：" + responseData.participantId;
+  }
+
+  submitButton.disabled = false;
+  submitButton.textContent = "完了する";
 
   showScreen("screen-finish");
+}
+
+async function sendToGoogleSheet(data) {
+  if (!SHEET_WEB_APP_URL || SHEET_WEB_APP_URL.includes("ここに")) {
+    console.log("Apps ScriptのURLが未設定です。");
+    return false;
+  }
+
+  try {
+    await fetch(SHEET_WEB_APP_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify(data)
+    });
+
+    return true;
+  } catch (error) {
+    console.log("スプレッドシート送信エラー", error);
+    return false;
+  }
 }
 
 function saveToLocalStorage(data) {
