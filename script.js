@@ -1,3 +1,4 @@
+const SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbywrxkRD8_bVOFzQNvHuviDDWtwnI0_JJrE6mAsLFdd1fPNrm66fpt_YGgh-JfovBxqSg/exec";
 const screens = [
   "screen-intro",
   "screen-usage",
